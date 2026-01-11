@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 class LoginWindow:
-    def __init__(self, on_login_callback):
+def __init__(self, on_login_callback):
         self.root = tk.Tk()
         self.root.title("Kéo Búa Bao Online - Đăng Nhập")
         self.root.geometry("350x250")
