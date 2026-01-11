@@ -4,16 +4,17 @@ from tkinter import messagebox
 class LoginWindow:
     def __init__(self, on_login_callback):
         self.root = tk.Tk()
-        self.root.title("Đăng Nhập")
-        self.root.geometry("300x200")
+        self.root.title("Kéo Búa Bao Online - Đăng Nhập")
+        self.root.geometry("350x250")
         self.on_login = on_login_callback
 
-        tk.Label(self.root, text="Nhập tên:").pack(pady=10)
-        self.entry_name = tk.Entry(self.root)
-        self.entry_name.pack(pady=5)
+        tk.Label(self.root, text="CHÀO MỪNG BẠN", font=("Arial", 14, "bold")).pack(pady=20)
+        self.entry_name = tk.Entry(self.root, font=("Arial", 12))
+        self.entry_name.pack(pady=10)
 
-        btn = tk.Button(self.root, text="Vào Game", command=self.handle_login)
-        btn.pack(pady=20)
+        btn_login = tk.Button(self.root, text="VÀO GAME", bg="green", fg="white", 
+                              command=self.handle_login)
+        btn_login.pack(pady=20)
 
     def handle_login(self):
         name = self.entry_name.get().strip()
