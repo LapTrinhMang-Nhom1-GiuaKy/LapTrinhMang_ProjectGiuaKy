@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
+class LoginWindow: # <--- Kiểm tra kỹ dòng này, phải là LoginWindow
+    def __init__(self, on_login_callback):
 
 def start_game():
     player_name = entry_name.get()
