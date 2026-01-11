@@ -1,31 +1,27 @@
 import tkinter as tk
 from tkinter import messagebox
 
-class GameScene:
-    def __init__(self, root, send_move_callback):
-        self.root = root
-        self.root.title("Kéo Búa Bao - Trận Đấu")
-        self.root.geometry("400x300")
-        self.send_move = send_move_callback # Hàm để gửi dữ liệu về client.py
+class LoginWindow:
+    def __init__(self, on_login_callback):
+        self.root = tk.Tk()
+        self.root.title("Đăng Nhập")
+        self.root.geometry("300x200")
+        self.on_login = on_login_callback
 
-        tk.Label(root, text="CHỌN NƯỚC ĐI CỦA BẠN", font=("Arial", 14, "bold")).pack(pady=20)
+        tk.Label(self.root, text="Nhập tên:").pack(pady=10)
+        self.entry_name = tk.Entry(self.root)
+        self.entry_name.pack(pady=5)
 
-        # Khung chứa 3 nút
-        btn_frame = tk.Frame(root)
-        btn_frame.pack(pady=10)
+        btn = tk.Button(self.root, text="Vào Game", command=self.handle_login)
+        btn.pack(pady=20)
 
-        tk.Button(btn_frame, text="BÚA (Rock)", width=15, height=3, bg="gray", 
-                  command=lambda: self.select_move("rock")).grid(row=0, column=0, padx=5)
-        
-        tk.Button(btn_frame, text="BAO (Paper)", width=15, height=3, bg="white", 
-                  command=lambda: self.select_move("paper")).grid(row=0, column=1, padx=5)
-        
-        tk.Button(btn_frame, text="KÉO (Scissors)", width=15, height=3, bg="yellow", 
-                  command=lambda: self.select_move("scissors")).grid(row=1, column=0, columnspan=2, pady=10)
+    def handle_login(self):
+        name = self.entry_name.get().strip()
+        if name:
+            self.on_login(name)
+            self.root.destroy()
+        else:
+            messagebox.showwarning("Lỗi", "Vui lòng nhập tên!")
 
-        self.status_label = tk.Label(root, text="Đang đợi đối thủ...", fg="blue")
-        self.status_label.pack(pady=10)
-
-    def select_move(self, move):
-        messagebox.showinfo("Thông báo", f"Bạn đã chọn: {move}")
-        self.send_move(move) # Gọi hàm gửi về server
+    def run(self):
+        self.root.mainloop()
