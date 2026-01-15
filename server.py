@@ -43,6 +43,9 @@ def handle_match(player1, player2):
     conn1, name1 = player1
     conn2, name2 = player2
 
+    score1 = 0
+    score2 = 0
+
     try:
         send_line(conn1, f"START {name2}")
         send_line(conn2, f"START {name1}")
@@ -60,6 +63,15 @@ def handle_match(player1, player2):
             if not line1 or not line2:
                 break
 
+            if line1 == "EXIT":
+                score2 += 1
+                send_line(conn2, f"RESULT win exit exit {score2} {score1}")
+                break
+            elif line2 == "EXIT":
+                score1 += 1
+                send_line(conn1, f"RESULT win exit exit {score1} {score2}")
+                break
+
             # MOVE rock/paper/scissors
             try:
                 _, m1 = line1.split(" ", 1)
@@ -69,14 +81,16 @@ def handle_match(player1, player2):
 
             result = decide_winner(m1, m2)
             if result == 0:
-                send_line(conn1, f"RESULT draw {m1} {m2}")
-                send_line(conn2, f"RESULT draw {m2} {m1}")
+                send_line(conn1, f"RESULT draw {m1} {m2} {score1} {score2}")
+                send_line(conn2, f"RESULT draw {m2} {m1} {score2} {score1}")
             elif result == 1:
-                send_line(conn1, f"RESULT win {m1} {m2}")
-                send_line(conn2, f"RESULT lose {m2} {m1}")
+                score1 += 1
+                send_line(conn1, f"RESULT win {m1} {m2} {score1} {score2}")
+                send_line(conn2, f"RESULT lose {m2} {m1} {score2} {score1}")
             else:
-                send_line(conn1, f"RESULT lose {m1} {m2}")
-                send_line(conn2, f"RESULT win {m2} {m1}")
+                score2 += 1
+                send_line(conn1, f"RESULT lose {m1} {m2} {score1} {score2}")
+                send_line(conn2, f"RESULT win {m2} {m1} {score2} {score1}")
 
             # Hỏi chơi tiếp
             send_line(conn1, "ASK_PLAY_AGAIN")

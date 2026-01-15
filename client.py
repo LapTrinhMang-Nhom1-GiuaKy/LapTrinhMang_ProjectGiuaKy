@@ -92,23 +92,25 @@ class RPSClient:
 
             if line == "PROMPT_MOVE":
                 if self.gui_game and hasattr(self, "tk_root") and self.tk_root:
-                    self.tk_root.after(0, lambda: self.gui_game.label_status.config(text="Đến lượt bạn chọn!"))
+                    self.tk_root.after(0, lambda: self.gui_game.enable_buttons())
+                    self.tk_root.after(0, lambda: self.gui_game.label_status.configure(text="Đến lượt bạn chọn!", text_color="#9feffb"))
                 elif self.gui_game:
                     try:
-                        self.gui_game.label_status.config(text="Đến lượt bạn chọn!")
+                        self.gui_game.enable_buttons()
+                        self.gui_game.label_status.configure(text="Đến lượt bạn chọn!", text_color="#9feffb")
                     except Exception:
                         pass
 
             elif line.startswith("RESULT "):
                 parts = line.split()
-                status, my_m, opp_m = parts[1], parts[2], parts[3]
+                status, my_m, opp_m, my_score, opp_score = parts[1], parts[2], parts[3], int(parts[4]), int(parts[5])
 
                 # Cập nhật kết quả lên màn hình và phát âm thanh thắng/thua
                 if self.gui_game and hasattr(self, "tk_root") and self.tk_root:
-                    self.tk_root.after(0, lambda s=status, mm=my_m, om=opp_m: self.gui_game.update_result(s, mm, om))
+                    self.tk_root.after(0, lambda s=status, mm=my_m, om=opp_m, ms=my_score, os=opp_score: self.gui_game.update_result(s, mm, om, ms, os))
                 elif self.gui_game:
                     try:
-                        self.gui_game.update_result(status, my_m, opp_m)
+                        self.gui_game.update_result(status, my_m, opp_m, my_score, opp_score)
                     except Exception:
                         pass
 
@@ -117,6 +119,10 @@ class RPSClient:
 
             elif line == "ASK_PLAY_AGAIN":
                 self.send_line("PLAY_AGAIN yes")
+
+            elif line == "EXIT":
+                # Không cần nữa, vì giờ gửi RESULT
+                pass
 
     def run(self):
         # Gọi hàm LoginWindow từ file login_gui.py

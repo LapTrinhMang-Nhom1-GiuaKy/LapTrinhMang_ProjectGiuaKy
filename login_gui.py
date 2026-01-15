@@ -1,5 +1,9 @@
-import tkinter as tk
+import customtkinter as ctk
 from tkinter import messagebox
+
+# Set appearance mode
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("dark-blue")
 
 # Dark neon theme colors
 _BG = "#071020"
@@ -12,29 +16,28 @@ _BTN_FG = "#041017"
 
 class LoginWindow:
     def __init__(self, on_login_callback):
-        self.root = tk.Tk()
+        self.root = ctk.CTk()
         self.root.title("Kéo Búa Bao Online - Đăng Nhập")
         self.root.geometry("360x220")
         self.root.configure(bg=_BG)
         self.on_login = on_login_callback
 
         # Heading
-        label = tk.Label(self.root, text="Nhập tên của bạn:", font=("Helvetica", 14, "bold"), bg=_BG, fg=_ACCENT)
+        label = ctk.CTkLabel(self.root, text="Nhập tên của bạn:", font=("Helvetica", 14, "bold"), text_color=_ACCENT)
         label.pack(pady=(20, 8))
 
         # Entry (styled)
-        self.entry_name = tk.Entry(self.root, font=("Helvetica", 12), bg=_INPUT_BG, fg=_INPUT_FG, insertbackground=_INPUT_FG,
-                                   bd=0, relief=tk.FLAT)
-        self.entry_name.pack(pady=6, ipady=8, padx=28, fill=tk.X)
+        self.entry_name = ctk.CTkEntry(self.root, font=("Helvetica", 12), fg_color=_INPUT_BG, text_color=_INPUT_FG, width=300)
+        self.entry_name.pack(pady=6, ipady=8, padx=28)
 
         # Login button (neon)
-        btn_login = tk.Button(self.root, text="Vào Sảnh Chờ", command=self.start_game,
-                              bg=_BTN_BG, fg=_BTN_FG, activebackground="#39faff", bd=0,
-                              font=("Helvetica", 12, "bold"))
+        btn_login = ctk.CTkButton(self.root, text="Vào Sảnh Chờ", command=self.start_game,
+                                  fg_color=_BTN_BG, text_color=_BTN_FG, hover_color="#39faff",
+                                  font=("Helvetica", 12, "bold"))
         btn_login.pack(pady=18)
 
         # small helper note
-        hint = tk.Label(self.root, text="Gõ tên → nhấn 'Vào Sảnh Chờ'", font=("Helvetica", 9), bg=_BG, fg="#7feef7")
+        hint = ctk.CTkLabel(self.root, text="Gõ tên → nhấn 'Vào Sảnh Chờ'", font=("Helvetica", 9), text_color="#7feef7")
         hint.pack()
 
         self.root.mainloop()
