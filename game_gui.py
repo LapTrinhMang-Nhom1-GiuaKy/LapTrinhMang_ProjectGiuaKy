@@ -105,12 +105,12 @@ class GameWindow:
         self.btn_music.configure(text=("Nhạc: Bật" if self.music_on else "Nhạc: Tắt"))
 
     def exit_game(self):
-        # Gửi EXIT và đóng cửa sổ
+        # Thoát ngay lập tức về Lobby, không chờ server
+        self.root.destroy()
         try:
             self.on_send_move("EXIT")
-        except Exception:
-            pass
-        self.root.destroy()
+        except:
+             pass
 
     def disable_buttons(self):
         for btn in self.buttons:
