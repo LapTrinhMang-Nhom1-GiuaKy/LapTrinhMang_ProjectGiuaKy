@@ -1,124 +1,61 @@
 import customtkinter as ctk
-from tkinter import messagebox
-from sound_manager import SoundManager
-
-# Set appearance mode
-ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("dark-blue")
-
-# Theme colors
-_BG = "#071020"
-_CARD = "#0d1624"
-_ACCENT = "#00f5ff"
-_NEON_ROCK = "#ff8c42"
-_NEON_PAPER = "#6ee7ff"
-_NEON_SCISSORS = "#7cff8a"
-_TEXT = "#e7ffff"
-
+from PIL import Image
+import os
 
 class GameWindow:
     def __init__(self, player_name, opponent_name, on_send_move, master=None):
-        self.player_name = player_name
-        self.opponent_name = opponent_name
-        self.on_send_move = on_send_move
+        self.root = ctk.CTkToplevel(master) if master else ctk.CTk()
+        self.root.title(f"Bàn chơi: {player_name} vs {opponent_name}")
+        self.root.geometry("550x580")
+        self.root.configure(fg_color="#071020")
 
-        if master is not None:
-            self.root = ctk.CTkToplevel(master)
-        else:
-            self.root = ctk.CTk()
-        self.root.title(f"Bàn chơi - {player_name} vs {opponent_name}")
-        self.root.geometry("420x300")
-        self.root.configure(bg=_BG)
+        # Load ảnh an toàn
+        img_dir = os.path.join(os.path.dirname(__file__), "assets", "images")
+        def load(n):
+            p = os.path.join(img_dir, n)
+            try: return ctk.CTkImage(Image.open(p), size=(100, 100))
+            except: return None
 
-        header = ctk.CTkFrame(self.root, fg_color=_CARD)
-        header.pack(fill="x", pady=12, padx=12)
-        ctk.CTkLabel(header, text=f"Bạn: {player_name}", font=("Helvetica", 12, "bold"), text_color=_ACCENT).pack(side="left", padx=6)
-        self.label_score = ctk.CTkLabel(header, text="Điểm: 0 - 0", font=("Helvetica", 12), text_color=_TEXT)
-        self.label_score.pack(side="left", padx=20)
-        ctk.CTkLabel(header, text=f"Đối thủ: {opponent_name}", font=("Helvetica", 12), text_color=_TEXT).pack(side="right", padx=6)
+        self.img_bua = load("rock.png")
+        self.img_bao = load("paper.png")
+        self.img_keo = load("scissors.png")
 
-        self.label_status = ctk.CTkLabel(self.root, text="Chờ lệnh START...", font=("Helvetica", 12), text_color="#9feffb")
+        # UI
+        header = ctk.CTkFrame(self.root, fg_color="#0d1624")
+        header.pack(fill="x", pady=15, padx=15)
+        ctk.CTkLabel(header, text=f"BẠN\n{player_name}", font=("Arial", 13, "bold"), text_color="#00f5ff").pack(side="left", padx=20)
+        self.label_score = ctk.CTkLabel(header, text="0 - 0", font=("Arial", 28, "bold"), text_color="#ffffff")
+        self.label_score.pack(side="left", expand=True)
+        ctk.CTkLabel(header, text=f"ĐỐI THỦ\n{opponent_name}", font=("Arial", 13), text_color="#ffffff").pack(side="right", padx=20)
+
+        self.label_status = ctk.CTkLabel(self.root, text="Chờ đối thủ...", font=("Arial", 14), text_color="#9feffb")
         self.label_status.pack(pady=10)
 
-        btn_frame = ctk.CTkFrame(self.root, fg_color=_BG)
-        btn_frame.pack(pady=10)
+        btn_f = ctk.CTkFrame(self.root, fg_color="transparent")
+        btn_f.pack(pady=20)
 
-        b_rock = ctk.CTkButton(btn_frame, text="ROCK", fg_color=_NEON_ROCK, text_color="#0b0b06", width=100,
-                               font=("Helvetica", 10, "bold"), hover_color="#ffb070",
-                               command=lambda: self.send_move("rock"))
-        b_paper = ctk.CTkButton(btn_frame, text="PAPER", fg_color=_NEON_PAPER, text_color="#04202a", width=100,
-                                font=("Helvetica", 10, "bold"), hover_color="#bff7ff",
-                                command=lambda: self.send_move("paper"))
-        b_scissors = ctk.CTkButton(btn_frame, text="SCISSORS", fg_color=_NEON_SCISSORS, text_color="#052205", width=100,
-                                   font=("Helvetica", 10, "bold"), hover_color="#cffecc",
-                                   command=lambda: self.send_move("scissors"))
+        self.b1 = ctk.CTkButton(btn_f, text="BÚA", image=self.img_bua, compound="top", command=lambda: on_send_move("bua"), width=140, height=160, fg_color="#ff8c42")
+        self.b2 = ctk.CTkButton(btn_f, text="BAO", image=self.img_bao, compound="top", command=lambda: on_send_move("bao"), width=140, height=160, fg_color="#6ee7ff")
+        self.b3 = ctk.CTkButton(btn_f, text="KÉO", image=self.img_keo, compound="top", command=lambda: on_send_move("keo"), width=140, height=160, fg_color="#7cff8a")
+        
+        self.b1.grid(row=0, column=0, padx=10); self.b2.grid(row=0, column=1, padx=10); self.b3.grid(row=0, column=2, padx=10)
+        self.btns = [self.b1, self.b2, self.b3]
+        self.disable_buttons()
 
-        b_rock.pack(side="left", padx=8)
-        b_paper.pack(side="left", padx=8)
-        b_scissors.pack(side="left", padx=8)
+        self.label_res = ctk.CTkLabel(self.root, text="", font=("Arial", 20, "bold"))
+        self.label_res.pack(pady=20)
 
-        self.buttons = [b_rock, b_paper, b_scissors]  # Để dễ quản lý
-        self.disable_buttons()  # Disable ban đầu, enable khi PROMPT_MOVE
-
-        self.label_result = ctk.CTkLabel(self.root, text="", font=("Helvetica", 16, "bold"), text_color=_ACCENT)
-        self.label_result.pack(pady=12)
-
-        # Music toggle
-        self.music_on = False
-        self.btn_music = ctk.CTkButton(self.root, text="Nhạc: Tắt", width=120, fg_color="#14202a", text_color=_ACCENT,
-                                       command=self.toggle_music)
-        self.btn_music.pack(pady=6)
-
-        # Exit button
-        self.btn_exit = ctk.CTkButton(self.root, text="Thoát Game", width=120, fg_color="#ff4444", text_color="#ffffff",
-                                      command=self.exit_game)
-        self.btn_exit.pack(pady=6)
-
-    def send_move(self, move):
-        self.label_status.configure(text=f"Đã chọn: {move}", text_color="#9feffb")
-        try:
-            self.on_send_move(move)
-        except Exception:
-            pass
-
-    def update_result(self, status, my_move, opp_move, my_score, opp_score):
-        if my_move == "exit":
-            msg = "Đối thủ đã thoát, bạn thắng!"
-            color = "#7cff8a"
-        elif status == "win":
-            msg = f"Bạn thắng! {my_move} vs {opp_move}"
-            color = "#7cff8a"
-        elif status == "lose":
-            msg = f"Bạn thua! {my_move} vs {opp_move}"
-            color = "#ff6b6b"
-        else:
-            msg = f"Hòa! {my_move} vs {opp_move}"
-            color = "#ffd86b"
-        self.label_result.configure(text=msg, text_color=color)
-        self.label_score.configure(text=f"Điểm: {my_score} - {opp_score}")
-        self.disable_buttons()  # Disable sau kết quả
-
-    def toggle_music(self):
-        new_state = not self.music_on
-        SoundManager.play_music(new_state)
-        self.music_on = new_state
-        self.btn_music.configure(text=("Nhạc: Bật" if self.music_on else "Nhạc: Tắt"))
-
-    def exit_game(self):
-        # Thoát ngay lập tức về Lobby, không chờ server
-        self.root.destroy()
-        try:
-            self.on_send_move("EXIT")
-        except:
-             pass
-
-    def disable_buttons(self):
-        for btn in self.buttons:
-            btn.configure(state="disabled")
+    def update_result(self, status, my_m, opp_m, my_s, opp_s):
+        n = {"bua": "BÚA", "bao": "BAO", "keo": "KÉO", "exit": "Thoát"}
+        txt = "THẮNG 🎉" if status == "win" else "THUA 💀" if status == "lose" else "HÒA 🤝"
+        clr = "#7cff8a" if status == "win" else "#ff6b6b" if status == "lose" else "#ffd86b"
+        self.label_res.configure(text=f"{txt}\n({n.get(my_m)} vs {n.get(opp_m)})", text_color=clr)
+        self.label_score.configure(text=f"{my_s} - {opp_s}")
 
     def enable_buttons(self):
-        for btn in self.buttons:
-            btn.configure(state="normal")
+        for b in self.btns: b.configure(state="normal")
+        self.label_status.configure(text="MỜI CHỌN!")
 
-    def mainloop(self):
-        self.root.mainloop()
+    def disable_buttons(self):
+        for b in self.btns: b.configure(state="disabled")
+        self.label_status.configure(text="Đợi...")
