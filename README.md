@@ -23,7 +23,5 @@ python server.py
 python client.py
 
 Sau đó nhập:
-- nhập IP Server: 127.0.0.1
-- nhập Port: 8000
 - Nhập tên người chơi: <Tên bất kỳ>
 
