@@ -24,4 +24,10 @@ python client.py
 
 Sau đó nhập:
 - Nhập tên người chơi: <Tên bất kỳ>
+- Sau khi kết nối thành công, người chơi có thể chọn: Kéo / Búa / Bao
 
+## Luật chơi
+- Rock (Kéo) thắng Scissors (Bao)
+- Scissors (Bao) thắng Paper (Búa)
+- Paper (Búa) thắng Rock (Kéo)
+- Hai lựa chọn giống nhau → Hòa
